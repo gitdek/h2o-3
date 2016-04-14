@@ -126,8 +126,11 @@ test.GLM.Gaussian.RandomGrid.Test.SyntheticData <- function() {
   # check to make sure gridsearch return the correct number of models built
   if (length(model_ids) == correct_model_number) {
     test_failed_array[test_index] = 0
-  } 
-
+    Log.info("*************   test 1: PASSED.")
+  } else {
+    Log.info("###################   test 1: FAILED.")
+  }
+  
   ###################   test 2: max model stopping condition
   test_index = test_index+1
   rm(glm_grid1)
@@ -161,6 +164,12 @@ test.GLM.Gaussian.RandomGrid.Test.SyntheticData <- function() {
     test_failed_array[test_index] = 0
   }
 
+  if (test_failed_array[test_index] > 0) {
+    Log.info("###################   test 2: FAILED.")
+  } else {
+    Log.info("*************   test 2: PASSED.")
+  }
+  
   ###################   test 3: max runtime stopping conditions
   test_index = test_index+1
   rm(glm_grid1)
@@ -198,7 +207,11 @@ test.GLM.Gaussian.RandomGrid.Test.SyntheticData <- function() {
     
   if ((total_model_built_time < search_criteria$max_runtime_secs * 1.1) || (length(model_ids) == 1)) {
     test_failed_array[test_index] = 0
-  } 
+    Log.info("*************   test 3: PASSED.")
+  } else {
+    Log.info("###################   test 3: FAILED.")
+  }
+  
   
   ###################   test 4: metric stopping conditions decreasing 
   test_index = test_index+1
@@ -217,6 +230,9 @@ test.GLM.Gaussian.RandomGrid.Test.SyntheticData <- function() {
   if (runGLMMetricStop(predictor_names, response_name, train_data, family, nfolds, hyper_parameters, search_criteria,
                        TRUE, correct_model_number,grid_name)) {
     test_failed_array[test_index] = 0
+    Log.info("*************   test 4: PASSED.")
+  } else {
+    Log.info("###################   test 4: FAILED.")
   }
   
   ###################   test 5: metric stopping conditions increasing  
@@ -232,6 +248,9 @@ test.GLM.Gaussian.RandomGrid.Test.SyntheticData <- function() {
   if (runGLMMetricStop(predictor_names, response_name, train_data, family, nfolds, hyper_parameters, search_criteria,
                        FALSE, correct_model_number, grid_name)) {
     test_failed_array[test_index] = 0
+    Log.info("*************   test 5: PASSED.")
+  } else {
+    Log.info("###################   test 5: FAILED.")
   }
   
   if (sum(test_failed_array) > 0) {
