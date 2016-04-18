@@ -82,20 +82,20 @@ test.GLM.Gaussian.Grid.Test2.SyntheticData <- function() {
   # count upper bound on number of grid search model that can be built
   correct_model_number = hyperSpaceDimension(hyper_parameters)
   
-  # summary of hyper_parameters
-  parameter_names = c("fold_assignment", "missing_values_handling", "alpha", "lambda", "max_runtime_secs")
-  parameter_defaults = c("AUTO", "MeanImputation", 0.5, 1e-5, 0)
-  
   # setup model parameters for GLM Gaussian
   family = 'gaussian'
   nfolds = 5
+  
+  # summary of hyper_parameters
+  parameter_names = c("fold_assignment", "missing_values_handling", "alpha", "lambda", "max_runtime_secs")
+  parameter_defaults = list("AUTO", "MeanImputation", NULL, NULL, 0)
   
   Log.info("Hyper-parameters used to train gridsearch:")
   Log.info(hyper_parameters)  # print out hyper-parameters used
   
   # introduce randomly more errors into hyper-parameter list
   error_number = round(runif(1, 0, 1))
-
+  
   # need to take out the bad argument values like negative values or values exceeding 1
   if (error_number == 0) {
     alpha_length = length(hyper_parameters[['alpha']])
@@ -112,7 +112,8 @@ test.GLM.Gaussian.Grid.Test2.SyntheticData <- function() {
   
   model_parameters = generateModelparameter(hyper_parameters, error_number, parameter_names, parameter_defaults)
 
-  argument_list = list(algorithm="glm", grid_id="glm_grid1", x=predictor_names, y=response_name, training_frame=train_data, family='gaussian', nfolds=nfolds, hyper_params=hyper_parameters)
+  grid_name = paste("myGLMBinomialGrid", as.integer(Sys.time()), sep="_")
+  argument_list = list(algorithm="glm", grid_id=grid_name, x=predictor_names, y=response_name, training_frame=train_data, family='gaussian', nfolds=nfolds, hyper_params=hyper_parameters)
   
   for (name in names(model_parameters)) {
     if (nchar(name) > 0) {
@@ -171,9 +172,10 @@ generateModelparameter <- function(hyper_parameters, error_number, hyper_paramet
     model_parameters = c(model_parameters, param_name)
     if (error_number == 0) {  # set parameter value to default value
       # choose eligible bad parameter index
-      model_parameters[[param_name]] = parameter_defaults[parameter_index]
+      
+      model_parameters[[param_name]] = parameter_defaults[[parameter_index]]
     } else {  # choose parameter value to anything but default
-      temp_list = setdiff(hyper_parameters[[param_name]], parameter_defaults[parameter_index])
+      temp_list = setdiff(hyper_parameters[[param_name]], parameter_defaults[[parameter_index]])
       random_index = floor(runif(1, 1, length(temp_list)))
       model_parameters[[param_name]] = temp_list[random_index]
     }
