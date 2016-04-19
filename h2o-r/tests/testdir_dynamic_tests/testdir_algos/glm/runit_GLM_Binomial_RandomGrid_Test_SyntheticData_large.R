@@ -76,14 +76,15 @@ test.GLM.Binomial.RandomGrid.Test.SyntheticData <- function() {
   predictor_names = col_names[1:train_col_count]
   response_index = train_col_count+1
   response_name = col_names[response_index]
-
+  
   # convert R data frame to H2O dataframe
   train_data = as.h2o(training_dataset)
   train_data[, response_index] = as.factor(train_data[, response_index])
   if (!(length(h2o.levels(train_data[,response_index]))==2)) { # dataset does not contain both classes
-    stop(simpleError("Your dataset does not contain two class.  No test is conducted.  Please try again"))
+    Log.info("Your dataset does not contain two class.  No test is conducted.  Please try again")
+    q("no",0,TRUE)
   }
-
+  
   # setup model parameters for GLM Binomial
   family = 'binomial'
   nfolds = 5
