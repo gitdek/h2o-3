@@ -332,6 +332,30 @@ class Test_glm_grid_search:
         pyunit_utils.write_hyper_parameters_json(self.current_dir, self.sandbox_dir, self.json_filename,
                                                  self.hyper_params)
 
+    def tear_down(self):
+        """
+        This function performs teardown after the dynamic test is completed.  If all tests
+        passed, it will delete all data sets generated since they can be quite large.  It
+        will move the training/validation/test data sets into a Rsandbox directory so that
+        we can re-run the failed test.
+        """
+
+        if self.test_failed:    # some tests have failed.  Need to save data sets for later re-runs
+            # create Rsandbox directory to keep data sets and weight information
+            self.sandbox_dir = pyunit_utils.make_Rsandbox_dir(self.current_dir, self.test_name, True)
+
+            # Do not want to save all data sets.  Only save data sets that are needed for failed tests
+            pyunit_utils.move_files(self.sandbox_dir, self.training1_data_file, self.training1_filename)
+
+            # write out the jenkins job info into log files.
+            json_file = os.path.join(self.sandbox_dir, self.json_filename)
+
+            with open(json_file,'wb') as test_file:
+                json.dump(self.hyper_params, test_file)
+
+        else:   # all tests have passed.  Delete sandbox if if was not wiped before
+            pyunit_utils.make_Rsandbox_dir(self.current_dir, self.test_name, False)
+
     def test1_glm_grid_search_over_params(self):
         """
         test1_glm_grid_search_over_params: test for condition 1 and performs the following:
