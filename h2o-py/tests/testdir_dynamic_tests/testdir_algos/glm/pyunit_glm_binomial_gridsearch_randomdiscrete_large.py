@@ -97,6 +97,7 @@ class Test_glm_random_grid_search:
     max_model_number = 0    # maximum number of models specified to test for stopping conditions, generated later
     max_grid_runtime = 1          # maximum runtime value in seconds, 1 minute max
     allowed_scaled_overtime = 0.1   # used to set max_allowed_runtime as allowed_scaled_overtime * total model run time
+    allowed_scaled_time = 0.2       # scale back time
     allowed_scaled_model_number = 1.5   # used to set max_model_number as
     # possible_number_models * allowed_scaled_model_number
     max_stopping_rounds = 10            # maximum stopping rounds allowed to be used for early stopping metric
@@ -414,6 +415,7 @@ class Test_glm_random_grid_search:
 
         # setup_data our stopping condition here
         max_run_time_secs = random.uniform(self.one_model_time, self.max_grid_runtime)
+        max_run_time_secs = random.uniform(self.one_model_time, self.allowed_scaled_time*self.max_grid_runtime)
         search_criteria = {'strategy': 'RandomDiscrete', 'max_runtime_secs': max_run_time_secs,
                            "seed": round(time.time())}
         # search_criteria = {'strategy': 'RandomDiscrete', 'max_runtime_secs': 1/1e8}
@@ -430,6 +432,9 @@ class Test_glm_random_grid_search:
 
         print("Maximum time limit is {0}.  Time taken to build all model is "
               "{1}".format(search_criteria["max_runtime_secs"], actual_run_time_secs))
+
+        print("Maximum model number is {0}.  Actual number of models built is {1}".format(self.possible_number_models,
+                                                                                          len(grid_model)))
 
         if actual_run_time_secs <= search_criteria["max_runtime_secs"]*(1+self.allowed_diff):
             print("test3_glm_random_grid_search_max_runtime_secs: passed!")
