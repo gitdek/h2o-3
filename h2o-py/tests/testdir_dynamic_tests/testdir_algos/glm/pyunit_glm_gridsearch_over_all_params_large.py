@@ -550,6 +550,8 @@ class Test_glm_grid_search:
 
         error_number = np.random.random_integers(0, 2, 1)   # randomly choose an error
 
+        print("error_number is {0}".format(error_number[0]))
+
         params_dict, error_hyper_params = \
             pyunit_utils.generate_redundant_parameters(self.hyper_params, self.gridable_parameters,
                                                        self.gridable_defaults, error_number[0])
