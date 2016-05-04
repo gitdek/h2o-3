@@ -74,26 +74,29 @@ public class NaiveBayesModel extends Model<NaiveBayesModel,NaiveBayesModel.Naive
     // Compute joint probability of predictors for every response class
     for(int rlevel = 0; rlevel < _output._levels.length; rlevel++) {
       // Take logs to avoid overflow: p(x,y) = p(x|y)*p(y) -> log(p(x,y)) = log(p(x|y)) + log(p(y))
-      nums[rlevel] = Math.log(_output._apriori_raw[rlevel]);
+      if (null != _output._apriori_raw)
+        nums[rlevel] = Math.log(_output._apriori_raw[rlevel]);
 
-      for(int col = 0; col < _output._ncats; col++) {
-        if(Double.isNaN(data[col])) continue;   // Skip predictor in joint x_1,...,x_m if NA
-        int plevel = (int)data[col];
-        double prob = plevel < _output._pcond_raw[col][rlevel].length ? _output._pcond_raw[col][rlevel][plevel] :
-                _parms._laplace / ((double)_output._rescnt[rlevel] + _parms._laplace * _output._domains[col].length);   // Laplace smoothing if predictor level unobserved in training set
-        nums[rlevel] += Math.log(prob <= _parms._eps_prob ? _parms._min_prob : prob);   // log(p(x|y)) = \sum_{j = 1}^m p(x_j|y)
-      }
+      if (null != _output._pcond_raw) {
+        for (int col = 0; col < _output._ncats; col++) {
+          if (Double.isNaN(data[col])) continue;   // Skip predictor in joint x_1,...,x_m if NA
+          int plevel = (int) data[col];
+          double prob = plevel < _output._pcond_raw[col][rlevel].length ? _output._pcond_raw[col][rlevel][plevel] :
+                  _parms._laplace / ((double) _output._rescnt[rlevel] + _parms._laplace * _output._domains[col].length);   // Laplace smoothing if predictor level unobserved in training set
+          nums[rlevel] += Math.log(prob <= _parms._eps_prob ? _parms._min_prob : prob);   // log(p(x|y)) = \sum_{j = 1}^m p(x_j|y)
+        }
 
-      // For numeric predictors, assume Gaussian distribution with sample mean and variance from model
-      for(int col = _output._ncats; col < data.length; col++) {
-        if(Double.isNaN(data[col])) continue;   // Skip predictor in joint x_1,...,x_m if NA
-        double x = data[col];
-        double mean = Double.isNaN(_output._pcond_raw[col][rlevel][0]) ? 0 : _output._pcond_raw[col][rlevel][0];
-        double stddev = Double.isNaN(_output._pcond_raw[col][rlevel][1]) ? 1.0 :
-          (_output._pcond_raw[col][rlevel][1] <= _parms._eps_sdev ? _parms._min_sdev : _output._pcond_raw[col][rlevel][1]);
-        // double prob = Math.exp(new NormalDistribution(mean, stddev).density(data[col])); // slower
-        double prob = Math.exp(-((x-mean)*(x-mean))/(2.*stddev*stddev)) / (stddev*Math.sqrt(2.*Math.PI)); // faster
-        nums[rlevel] += Math.log(prob <= _parms._eps_prob ? _parms._min_prob : prob);
+        // For numeric predictors, assume Gaussian distribution with sample mean and variance from model
+        for (int col = _output._ncats; col < data.length; col++) {
+          if (Double.isNaN(data[col])) continue;   // Skip predictor in joint x_1,...,x_m if NA
+          double x = data[col];
+          double mean = Double.isNaN(_output._pcond_raw[col][rlevel][0]) ? 0 : _output._pcond_raw[col][rlevel][0];
+          double stddev = Double.isNaN(_output._pcond_raw[col][rlevel][1]) ? 1.0 :
+                  (_output._pcond_raw[col][rlevel][1] <= _parms._eps_sdev ? _parms._min_sdev : _output._pcond_raw[col][rlevel][1]);
+          // double prob = Math.exp(new NormalDistribution(mean, stddev).density(data[col])); // slower
+          double prob = Math.exp(-((x - mean) * (x - mean)) / (2. * stddev * stddev)) / (stddev * Math.sqrt(2. * Math.PI)); // faster
+          nums[rlevel] += Math.log(prob <= _parms._eps_prob ? _parms._min_prob : prob);
+        }
       }
     }
 
