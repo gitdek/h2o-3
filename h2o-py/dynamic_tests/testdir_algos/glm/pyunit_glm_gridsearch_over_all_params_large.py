@@ -413,8 +413,9 @@ class Test_glm_grid_search:
                 if abs(test_grid_model_metrics.mse() - test_manual_model_metrics.mse()) > self.allowed_diff:
 #                    self.test_failed += 1             # count total number of tests that have failed
 #                    self.test_failed_array[self.test_num] += 1
-                    print("test1_glm_grid_search_over_params for GLM warning: grid search model and manually "
-                          "built H2O model differ too much in test MSE!")
+                    print("test1_glm_grid_search_over_params for GLM warning: grid search model metric ({0}) and "
+                          "manually built H2O model metric ({1}) differ too much"
+                          "!".format(test_grid_model_metrics.mse(), test_manual_model_metrics.mse()))
 
                 total_run_time_limits = max(total_run_time_limits, true_run_time_limits) * (1+self.extra_time_fraction)
 
