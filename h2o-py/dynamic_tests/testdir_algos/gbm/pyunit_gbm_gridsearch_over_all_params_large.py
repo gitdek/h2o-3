@@ -24,7 +24,7 @@ class Test_gbm_grid_search:
     here.
 
     Test Descriptions:
-    test_gbm_grid_search_over_params performs the following:
+    test_glrm_grid_search_over_params performs the following:
         a. grab all truely griddable parameters and randomly or manually set the parameter values.
         b. Next, build H2O GBM models using grid search.  Count and make sure models
            are only built for hyper-parameters set to legal values.  No model is built for bad hyper-parameters
@@ -275,7 +275,7 @@ class Test_gbm_grid_search:
 
     def test_gbm_grid_search_over_params(self):
         """
-        test_gbm_grid_search_over_params: test for condition 1 and performs the following:
+        test_glrm_grid_search_over_params: test for condition 1 and performs the following:
         a. grab all truely griddable parameters and randomly or manually set the parameter values.
         b. Next, build H2O GBM models using grid search.  Count and make sure models
            are only built for hyper-parameters set to legal values.  No model is built for bad hyper-parameters
@@ -289,7 +289,7 @@ class Test_gbm_grid_search:
         """
 
         print("*******************************************************************************************")
-        print("test_gbm_grid_search_over_params for GBM " + self.family)
+        print("test_glrm_grid_search_over_params for GBM " + self.family)
         h2o.cluster_info()
 
         try:
@@ -306,7 +306,7 @@ class Test_gbm_grid_search:
             # make sure the correct number of models are built by gridsearch
             if not (self.correct_model_number == self.possible_number_models):  # wrong grid model number
                 self.test_failed += 1
-                print("test_gbm_grid_search_over_params for GBM failed: number of models built by gridsearch "
+                print("test_glrm_grid_search_over_params for GBM failed: number of models built by gridsearch "
                       "does not equal to all possible combinations of hyper-parameters")
             else:
                 # add parameters into params_dict.  Use this to manually build model
@@ -378,7 +378,7 @@ class Test_gbm_grid_search:
                             (abs(model_runtime - each_model_runtime)/each_model_runtime < self.allowed_runtime_diff) \
                             and (abs(test_grid_model_metrics - test_manual_model_metrics) > self.allowed_diff):
 #                        self.test_failed += 1             # count total number of tests that have failed
-                        print("test_gbm_grid_search_over_params for GBM warning: grid search model mdetric ({0}) and "
+                        print("test_glrm_grid_search_over_params for GBM warning: grid search model mdetric ({0}) and "
                               "manually built H2O model metric ({1}) differ too much"
                               "!".format(test_grid_model_metrics, test_manual_model_metrics))
 
@@ -387,17 +387,17 @@ class Test_gbm_grid_search:
                 # make sure the max_runtime_secs is working to restrict model built time
                 if not(manual_run_runtime <= total_run_time_limits):
                     self.test_failed += 1
-                    print("test_gbm_grid_search_over_params for GBM failed: time taken to manually build models is {0}."
+                    print("test_glrm_grid_search_over_params for GBM failed: time taken to manually build models is {0}."
                           "  Maximum allowed time is {1}".format(manual_run_runtime, total_run_time_limits))
                 else:
                     print("time taken to manually build all models is {0}. Maximum allowed time is "
                           "{1}".format(manual_run_runtime, total_run_time_limits))
 
                 if self.test_failed == 0:
-                    print("test_gbm_grid_search_over_params for GBM has passed!")
+                    print("test_glrm_grid_search_over_params for GBM has passed!")
         except:
             if self.possible_number_models > 0:
-                print("test_gbm_grid_search_over_params for GBM failed: exception was thrown for no reason.")
+                print("test_glrm_grid_search_over_params for GBM failed: exception was thrown for no reason.")
                 self.test_failed += 1
 
 
