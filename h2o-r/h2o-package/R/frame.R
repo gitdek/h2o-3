@@ -1994,6 +1994,33 @@ var <- function(x, y = NULL, na.rm = FALSE, use)  {
 }
 
 #'
+#' Correlation of columns.
+#'
+#' Compute the correlation matrix of one or two H2OFrames.
+#'
+#' @param x An H2OFrame object.
+#' @param y \code{NULL} (default) or an H2OFrame. The default is equivalent to y = x.
+#' @examples
+#' \donttest{
+#' h2o.init()
+#' prosPath <- system.file("extdata", "prostate.csv", package="h2o")
+#' prostate.hex <- h2o.uploadFile(path = prosPath)
+#' cor(prostate.hex$AGE)
+#' }
+#' @export
+h2o.cor <- function(x, y=NULL){
+  symmetric <- FALSE
+  if( is.null(y) ) {
+    y <- x
+    symmetric <- TRUE
+  }
+  # Eager, mostly to match prior semantics but no real reason it need to be
+  expr <- .newExpr("cor",x,y,symmetric)
+  if( (nrow(x)==1L || (ncol(x)==1L && ncol(y)==1L)) ) .eval.scalar(expr)
+  else .fetch.data(expr,ncol(x))
+}
+
+#'
 #' Standard Deviation of a column of data.
 #'
 #' Obtain the standard deviation of a column of data.

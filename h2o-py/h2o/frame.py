@@ -1608,6 +1608,26 @@ class H2OFrame(object):
     """
     return ExprNode("sd", self, na_rm)._eager_scalar()
 
+  def cor(self,y=None):
+    """Compute the correlation matrix of one or two H2OFrames.
+
+    Parameters
+    ----------
+    y : H2OFrame, default=None
+      If self has multiple columns, then its correlation matrix is returned. Single rows are treated as single columns.
+      If y is not None, then a correlation matrix between the columns of self and the columns of y is computed.
+    Returns
+    -------
+      An H2OFrame of the correlation matrix of the columns of this H2OFrame with itself (if y is not given), or with the columns of y
+      (if y is given). If self and y are single rows or single columns, the correlation is given as a scalar.
+    """
+    symmetric = False
+    if y is None:
+      y = self
+      symmetric = True
+    if self.nrow==1 or (self.ncol==1 and y.ncol==1): return ExprNode("cor",self,y,symmetric)._eager_scalar()
+    return H2OFrame._expr(expr=ExprNode("cor",self,y,symmetric))._frame()
+
   def asfactor(self):
     """
     Returns
