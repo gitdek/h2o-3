@@ -2020,6 +2020,13 @@ h2o.cor <- function(x, y=NULL){
   else .fetch.data(expr,ncol(x))
 }
 
+#' @rdname h2o.cor
+#' @export
+cor <- function(x, y = NULL)  {
+  if( is.H2OFrame(x) ) h2o.cor(x,y)
+  else stats::cor(x,y)
+}
+
 #'
 #' Standard Deviation of a column of data.
 #'
