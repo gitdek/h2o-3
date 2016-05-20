@@ -1614,6 +1614,7 @@ class H2OFrame(object):
     Parameters
     ----------
     y : H2OFrame, default=None
+      If y is None and self is a single column, then the correlation is computed for self.
       If self has multiple columns, then its correlation matrix is returned. Single rows are treated as single columns.
       If y is not None, then a correlation matrix between the columns of self and the columns of y is computed.
     Returns

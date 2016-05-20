@@ -83,7 +83,7 @@ class ASTCorrelation extends ASTPrim {
         if (symmetric) {
             //1-col returns scalar
             if (ncoly == 1)
-                return new ValNum(vecys[0].naCnt() == 0 ? vecys[0].sigma() : Double.NaN);
+                return new ValNum(vecys[0].naCnt() == 0 ? 1 : Double.NaN);
 
             int[] idx = new int[ncoly];
             for (int y = 1; y < ncoly; y++) idx[y] = y;
@@ -98,12 +98,12 @@ class ASTCorrelation extends ASTPrim {
 
             double[][] res_array = new double[ncoly][ncoly];
 
-            //fill in the diagonals
+            //fill in the diagonals (variances) using sigma from rollupstats
             for (int y = 0; y < ncoly; y++)
-                res_array[y][y] = vecys[y].naCnt() == 0 ? vecys[y].sigma() * vecys[y].sigma() : Double.NaN;;
+                res_array[y][y] = vecys[y].naCnt() == 0 ? vecys[y].sigma() * vecys[y].sigma() : Double.NaN;
 
 
-//            //arrange the results into the bottom left of res_array. each successive cvs is 1 smaller in length
+            //arrange the results into the bottom left of res_array. each successive cvs is 1 smaller in length
             for (int y = 0; y < ncoly - 1; y++)
                 System.arraycopy(ArrayUtils.div(cvs[y].getResult()._cors, (fry.numRows() - 1)), 0, res_array[y], y + 1, ncoly - y - 1);
 
@@ -131,7 +131,7 @@ class ASTCorrelation extends ASTPrim {
             return new ValNum(cvs[0].getResult()._cors[0] / (fry.numRows() - 1));
         }
 
-        // Gather all the Xs-vs-Y correlation arrays; divide by rows
+        // Gather all the Xs-vs-Y covariance arrays; divide by rows
         Vec[] res = new Vec[ncoly];
         Key<Vec>[] keys = Vec.VectorGroup.VG_LEN1.addVecs(ncoly);
         for (int y = 0; y < ncoly; y++)
@@ -156,9 +156,8 @@ class ASTCorrelation extends ASTPrim {
                 final Chunk cx = cs[x+1];
                 final double xmean = _xmeans[x];
                 final double xsigma = _xsigma[x];
-                for( int row=0; row<len; row++ ){
+                for( int row=0; row<len; row++ )
                     sum += (cx.atd(row)-xmean)*(cy.atd(row)-_ymean);
-                }
                 _cors[x] = sum/(xsigma * _ysigma);
             }
         }
